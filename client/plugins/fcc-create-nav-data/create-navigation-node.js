@@ -6,6 +6,7 @@ const readDir = require('../../utils/readDir');
 
 const { isAStubRE } = commonREs;
 const pagesDir = path.resolve(__dirname, '../../src/pages/guide/english/');
+const indexMdRe = new RegExp(`\\${path.sep}index.md$`);
 
 function withGuidePrefix(str) {
   return `/guide${str}`;
@@ -19,10 +20,10 @@ exports.createNavigationNode = node => {
     parent
   } = node;
 
-  const nodeDir = fileAbsolutePath.replace(/\/index\.md$/, '');
-  const dashedName = nodeDir.split('/').slice(-1)[0];
-  const [, path] = nodeDir.split(pagesDir);
-  const parentPath = path
+  const nodeDir = path.resolve(fileAbsolutePath).replace(indexMdRe, '');
+  const dashedName = nodeDir.split(path.sep).slice(-1)[0];
+  const currentPath = nodeDir.split(pagesDir)[1].split(path.sep).join('/');
+  const parentPath = currentPath
     .split('/')
     .slice(0, -1)
     .join('/');
@@ -33,7 +34,7 @@ exports.createNavigationNode = node => {
     hasChildren: !!categoryChildren.length,
     dashedName,
     isStubbed: isAStubRE.test(content),
-    path: withGuidePrefix(path),
+    path: withGuidePrefix(currentPath),
     parentPath: withGuidePrefix(parentPath),
     title
   };
