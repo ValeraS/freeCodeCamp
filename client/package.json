@@ -35,6 +35,7 @@
     "lodash": "^4.17.10",
     "loop-protect": "^2.1.6",
     "monaco-editor-webpack-plugin": "^1.5.4",
+    "monaco-themes": "^0.2.5",
     "nanoid": "^1.2.2",
     "prismjs": "^1.15.0",
     "query-string": "^6.1.0",

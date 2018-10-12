@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import MonacoEditor from 'react-monaco-editor';
+import cobaltThem from 'monaco-themes/themes/Cobalt.json';
 
 import { executeChallenge, updateFile } from '../redux';
 import { userSelector } from '../../../redux';
@@ -45,19 +46,10 @@ const defineMonacoThemes = monaco => {
     return;
   }
   monacoThemesDefined = true;
-  const yellowCollor = 'FFFF00';
-  const lightBlueColor = '9CDCFE';
+
+  monaco.editor.defineTheme('vs-dark-custom', cobaltThem);
+
   const darkBlueColor = '00107E';
-  monaco.editor.defineTheme('vs-dark-custom', {
-    base: 'vs-dark',
-    inherit: true,
-    rules: [
-      { token: 'delimiter.js', foreground: lightBlueColor },
-      { token: 'delimiter.parenthesis.js', foreground: yellowCollor },
-      { token: 'delimiter.array.js', foreground: yellowCollor },
-      { token: 'delimiter.bracket.js', foreground: yellowCollor }
-    ]
-  });
   monaco.editor.defineTheme('vs-custom', {
     base: 'vs',
     inherit: true,
@@ -128,7 +120,7 @@ class Editor extends PureComponent {
 
   render() {
     const { contents, ext, theme, fileKey } = this.props;
-    const editorTheme = theme === 'night' ? 'vs-dark-custom' : 'vs-custom';
+    const editorTheme = theme === 'night' ? 'vs-dark-custom' : 'vs-dark-custom';
     return (
       <div className='classic-editor editor'>
         <base href='/' />
