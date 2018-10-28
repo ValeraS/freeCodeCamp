@@ -36,6 +36,7 @@ const schema = Joi.object().keys({
   isLocked: Joi.bool(),
   isPrivate: Joi.bool(),
   isRequired: Joi.bool(),
+  localeTitle: Joi.string(),
   name: Joi.string(),
   order: Joi.number(),
   required: Joi.array().items(

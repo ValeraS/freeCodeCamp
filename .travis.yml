@@ -5,7 +5,8 @@ node_js:
 
 cache:
   directories:
-  - "$HOME/.npm"
+    - "$HOME/.npm"
+    - "$HOME/npm"
 
 env:
   global:
@@ -23,5 +24,16 @@ before_script:
   - git config --global user.email team+camperbot@freeCodeCamp.org
   - git config --global user.name "CamperBot"
 
-script:
-  - npm run test-ci
+jobs:
+  include:
+    - stage: lint
+      script: npm-run-all -p lint test:guide-directories
+      install: npm ci --ignore-scripts
+    - stage: test
+      script: npm-run-all -p test:client test:server
+    - stage: test-curriculum
+      script: npm run test:curriculum
+      env: LOCALE=english
+    - stage: test-curriculum
+      script: npm run test:curriculum
+      env: LOCALE=arabic
