@@ -44,7 +44,7 @@ tests:
 ## Solution
 <section id='solution'>
 
-```js
-// solution required
+```html
+<img src="doingKarateWow.jpeg" alt=''>
 ```
 </section>
