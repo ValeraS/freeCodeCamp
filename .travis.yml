@@ -17,7 +17,7 @@ sudo: false
 before_install:
   - npm config set loglevel warn
 
-install: npm ci
+install: npm ci --ignore-scripts
 
 before_script:
   - git config --global user.email team+camperbot@freeCodeCamp.org
