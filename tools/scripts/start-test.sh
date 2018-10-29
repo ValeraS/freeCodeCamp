@@ -6,11 +6,11 @@ then
 fi
 CHANGES=$(git --no-pager diff --name-only "$TRAVIS_COMMIT_RANGE");
 
-guide_changed=$(grep -q '^guide' <<< "$CHANGES");
-client_changed=$(grep -q '^client' <<< "$CHANGES");
-server_changed=$(grep -q '^server' <<< "$CHANGES");
-curriculum_changed=$(grep -q '^curriculum' <<< "$CHANGES");
-tools_changed=$(grep -q '^tools' <<< "$CHANGES");
+guide_changed=$(grep --quiet '^guide' <<< "$CHANGES");
+client_changed=$(grep --quiet '^client' <<< "$CHANGES");
+server_changed=$(grep --quiet '^server' <<< "$CHANGES");
+curriculum_changed=$(grep --quiet '^curriculum' <<< "$CHANGES");
+tools_changed=$(grep --quiet '^tools' <<< "$CHANGES");
 
 npm run lint;
 
