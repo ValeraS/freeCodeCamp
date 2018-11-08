@@ -106,7 +106,7 @@ function updateMyCurrentChallenge(req, res, next) {
   } = req;
   return user
     .update$({ currentChallengeId })
-    .subscribe(() => res.status(200), next);
+    .subscribe(() => res.sendStatus(200), next);
 }
 
 const updateMyThemeValidators = [
