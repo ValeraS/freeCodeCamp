@@ -114,8 +114,14 @@ function checkFrontmatter(fullPath) {
         return reject(new Error(err));
       }
       try {
+        const lang = fullPath.replace(guideRoot, '').split(path.sep)[1];
         const { data: frontmatter } = matter(content);
-        if (!frontmatter || _.isEmpty(frontmatter) || !frontmatter.title) {
+        if (
+          !frontmatter ||
+          _.isEmpty(frontmatter) ||
+          !frontmatter.title ||
+          (lang !== 'english' && !frontmatter.localeTitle)
+        ) {
           return reject(
             new Error(`
   The article at: ${fullPath} is missing frontmatter.
