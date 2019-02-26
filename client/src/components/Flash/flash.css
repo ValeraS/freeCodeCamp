@@ -1,7 +1,43 @@
+.flash-container {
+  position: fixed;
+  padding: 6px 12px;
+  z-index: 10301;
+}
+
+.top-right {
+  top: 0;
+  right: 0;
+}
+
 .flash-message {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  flex-direction: row-reverse;
-  margin-bottom: 0px;
+  text-align: left;
+  transition: all 0.25s ease-in-out;
+}
+
+.flash-message.alert {
+  margin-bottom: 5px;
+}
+
+.flash-message .message-container {
+  display: inline-block;
+}
+
+.flash-message.entering {
+  opacity: 0.01;
+  transform: translateX(-25%);
+  max-height: 0;
+  overflow: hidden;
+}
+
+.flash-message.entered {
+  opacity: 1;
+  transform: translateX(0);
+  max-height: 20em;
+}
+
+.flash-message.exiting {
+  opacity: 0.01;
+  transform: translateX(25%);
+  max-height: 0;
+  overflow: hidden;
 }

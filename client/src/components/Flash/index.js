@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Alert } from '@freecodecamp/react-bootstrap';
+
+import FlashMessage from './FlashMessage';
 
 import './flash.css';
 
@@ -9,16 +10,20 @@ function createDismissHandler(fn, id) {
 }
 
 function Flash({ messages, onClose }) {
-  return messages.map(({ type, message, id }) => (
-    <Alert
-      bsStyle={type}
-      className='flash-message'
-      key={id}
-      onDismiss={createDismissHandler(onClose, id)}
-    >
-      <div dangerouslySetInnerHTML={{ __html: message }} />
-    </Alert>
-  ));
+  return (
+    <div className='flash-container top-right'>
+      {messages.map(({ type, message, id }) => (
+        <FlashMessage
+          key={id}
+          onClose={createDismissHandler(onClose, id)}
+          timeout={5000}
+          type={type}
+        >
+          <div dangerouslySetInnerHTML={{ __html: message }} />
+        </FlashMessage>
+      ))}
+    </div>
+  );
 }
 
 Flash.displayName = 'FlashMessages';
