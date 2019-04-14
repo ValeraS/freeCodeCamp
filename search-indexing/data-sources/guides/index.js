@@ -26,7 +26,7 @@ function parseFile(file) {
   return { ...file, ...matter(fileContents) };
 }
 
-function buildArticle(file) {
+function buildArticle(file, urlPrefix) {
   const {
     path,
     content,
@@ -37,7 +37,7 @@ function buildArticle(file) {
     content: stripURLs(stripHTML(content)),
     category: url.split('/').filter(Boolean)[0],
     title,
-    url: `/${url}`,
+    url: `${urlPrefix}/${url}`,
     id: url.replace('/', '-')
   };
   return chunkDocument(article, ['title', 'url', 'id', 'category'], 'content');
@@ -49,9 +49,11 @@ function filterStubs(articleChunks) {
   );
 }
 
-exports.getGuideArticleData = () =>
-  fileStream(guideRoot).pipe(
+exports.getGuideArticleData = (pathToGuide = guideRoot, options = {}) => {
+  const { urlPrefix = '/guide' } = options;
+  return fileStream(pathToGuide).pipe(
     map(file => parseFile(file)),
-    map(file => buildArticle(file)),
+    map(file => buildArticle(file, urlPrefix)),
     filter(article => filterStubs(article))
   );
+};
