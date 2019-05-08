@@ -19,7 +19,8 @@ import {
   logsToConsole,
   updateTests,
   isBuildEnabledSelector,
-  disableBuildOnError
+  disableBuildOnError,
+  initTests
 } from './';
 
 import {
@@ -42,6 +43,11 @@ export function* executeChallengeSaga() {
     yield fork(logToConsole, consoleProxy);
     const proxyLogger = args => consoleProxy.put(args);
 
+    const tests = (yield select(challengeTestsSelector)).map(
+      ({ text, testString }) => ({ text, testString })
+    );
+    yield put(initTests(tests));
+
     const challengeData = yield select(challengeDataSelector);
     const buildData = yield buildChallengeData(challengeData);
     const document = yield getContext('document');
@@ -51,7 +57,7 @@ export function* executeChallengeSaga() {
       proxyLogger,
       document
     );
-    const testResults = yield executeTests(testRunner);
+    const testResults = yield executeTests(testRunner, tests);
 
     yield put(updateTests(testResults));
     yield put(updateConsole('// tests completed'));
@@ -79,9 +85,7 @@ function* buildChallengeData(challengeData) {
   }
 }
 
-function* executeTests(testRunner) {
-  const tests = yield select(challengeTestsSelector);
-  const testTimeout = 5000;
+function* executeTests(testRunner, tests, testTimeout = 5000) {
   const testResults = [];
   for (const { text, testString } of tests) {
     const newTest = { text, testString };
