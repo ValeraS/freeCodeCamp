@@ -157,6 +157,14 @@ module.exports = {
         fonts: ['Lato:400,400i,500']
       }
     },
-    'gatsby-plugin-sitemap'
+    'gatsby-plugin-sitemap',
+    {
+      resolve: 'gatsby-plugin-webpack-bundle-analyser-v2',
+      options: {
+        analyzerMode: 'server',
+        analyzerPort: '8888',
+        disable: false
+      }
+    }
   ]
 };

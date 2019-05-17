@@ -6,6 +6,7 @@ module.exports = (env = {}) => {
   return {
     mode: __DEV__ ? 'development' : 'production',
     entry: {
+      'babel-transform': './src/client/workers/babel-transform.js',
       'frame-runner': './src/client/frame-runner.js',
       'sass-compile': './src/client/workers/sass-compile.js',
       'test-evaluator': './src/client/workers/test-evaluator.js'
@@ -19,6 +20,9 @@ module.exports = (env = {}) => {
     stats: {
       // Display bailout reasons
       optimizationBailout: true
+    },
+    node: {
+      fs: 'empty'
     },
     module: {
       rules: [

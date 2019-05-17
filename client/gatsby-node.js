@@ -184,7 +184,11 @@ exports.onCreateWebpackConfig = ({ stage, rules, plugins, actions }) => {
   });
   if (stage !== 'build-html') {
     actions.setWebpackConfig({
-      plugins: [new MonacoWebpackPlugin()]
+      plugins: [
+        new MonacoWebpackPlugin({
+          languages: ['css', 'html', 'javascript', 'scss', 'typescript']
+        })
+      ]
     });
   }
   if (stage === 'build-html') {
@@ -205,18 +209,5 @@ exports.onCreateBabelConfig = ({ actions }) => {
   });
   actions.setBabelPlugin({
     name: '@babel/plugin-proposal-export-default-from'
-  });
-  actions.setBabelPlugin({
-    name: 'babel-plugin-transform-imports',
-    options: {
-      '@freecodecamp/react-bootstrap': {
-        transform: '@freecodecamp/react-bootstrap/lib/${member}',
-        preventFullImport: true
-      },
-      lodash: {
-        transform: 'lodash/${member}',
-        preventFullImport: true
-      }
-    }
   });
 };

@@ -1,37 +1,15 @@
 import {
-  attempt,
   cond,
   flow,
   identity,
-  isError,
   matchesProperty,
   overSome,
   partial,
   stubTrue
 } from 'lodash';
 
-import * as Babel from '@babel/standalone';
-import presetEnv from '@babel/preset-env';
-import presetReact from '@babel/preset-react';
-import protect from 'loop-protect';
-
 import * as vinyl from '../utils/polyvinyl.js';
 import createWorker from '../utils/worker-executor';
-
-const protectTimeout = 100;
-Babel.registerPlugin('loopProtection', protect(protectTimeout));
-
-const babelOptionsJSX = {
-  plugins: ['loopProtection'],
-  presets: [presetEnv, presetReact]
-};
-
-const babelOptionsJS = {
-  presets: [presetEnv]
-};
-
-const babelTransformCode = options => code =>
-  Babel.transform(code, options).code;
 
 // const sourceReg =
 //  /(<!-- fcc-start-source -->)([\s\S]*?)(?=<!-- fcc-end-source -->)/g;
@@ -51,41 +29,31 @@ export const replaceNBSP = cond([
   [stubTrue, identity]
 ]);
 
-function tryTransform(wrap = identity) {
-  return function transformWrappedPoly(source) {
-    const result = attempt(wrap, source);
-    if (isError(result)) {
-      console.error(result);
-      // note(Bouncey): Error thrown here to collapse the build pipeline
-      // At the minute, it will not bubble up
-      // We collapse the pipeline so the app doesn't fall over trying
-      // parse bad code (syntax/type errors etc...)
-      throw result;
-    }
-    return result;
+const babelTransform = createWorker('babel-transform');
+const babelTransformCode = options =>
+  async function(file) {
+    const code = [file.head, file.contents, file.tail];
+    const result = await Promise.all(
+      code.map(
+        async code =>
+          await babelTransform.execute(
+            {
+              code,
+              options
+            },
+            5000
+          ).done
+      )
+    );
+    let newFile = vinyl.transformContents(() => result[1], file);
+    newFile.head = result[0];
+    newFile.tail = result[2];
+    return vinyl.setExt('js', newFile);
   };
-}
 
 export const babelTransformer = cond([
-  [
-    testJS,
-    flow(
-      partial(
-        vinyl.transformHeadTailAndContents,
-        tryTransform(babelTransformCode(babelOptionsJS))
-      )
-    )
-  ],
-  [
-    testJSX,
-    flow(
-      partial(
-        vinyl.transformHeadTailAndContents,
-        tryTransform(babelTransformCode(babelOptionsJSX))
-      ),
-      partial(vinyl.setExt, 'js')
-    )
-  ],
+  [testJS, flow(babelTransformCode('JS'))],
+  [testJSX, flow(babelTransformCode('JSX'))],
   [stubTrue, identity]
 ]);
 
@@ -100,21 +68,27 @@ async function transformSASS(element) {
   );
 }
 
-function transformScript(element) {
+async function transformScript(element) {
   const scriptTags = element.querySelectorAll('script');
-  scriptTags.forEach(script => {
-    script.innerHTML = tryTransform(babelTransformCode(babelOptionsJSX))(
-      script.innerHTML
-    );
-  });
+  await Promise.all(
+    [].map.call(scriptTags, async script => {
+      script.innerHTML = await babelTransform.execute(
+        {
+          code: script.innerHTML,
+          options: 'JSX'
+        },
+        5000
+      ).done;
+    })
+  );
 }
 
-const transformHtml = async function(file) {
+async function transformHtml(file) {
   const div = document.createElement('div');
   div.innerHTML = file.contents;
   await Promise.all([transformSASS(div), transformScript(div)]);
   return vinyl.transformContents(() => div.innerHTML, file);
-};
+}
 
 export const composeHTML = cond([
   [
